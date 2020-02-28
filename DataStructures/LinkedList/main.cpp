@@ -1,6 +1,5 @@
 /* hello.cpp */
 #include <iostream>
-#include <vector>
 #include "LinkedList.h"
 
 using namespace std;
