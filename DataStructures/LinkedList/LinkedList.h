@@ -30,6 +30,7 @@ class LinkedList
 {
 public:
     LinkedList():head(nullptr){}
+    ~LinkedList(){ DeleteAll(); }
 
 public:
     Node<T>* InsertInHead(int data);
@@ -94,7 +95,7 @@ void LinkedList<T>::DeleteAll()
 
     while(current != nullptr)
     {
-        auto next = current->next;
+        auto next = current->GetNext();
         delete current;
         current = next;
     }

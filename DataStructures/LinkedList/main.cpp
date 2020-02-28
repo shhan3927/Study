@@ -5,44 +5,50 @@
 
 using namespace std;
 
-Node<int>* LinkedListInsertTest(LinkedList<int>& list, int value)
+class Stack
 {
-    return list.InsertInHead(value);
-}
+public:
+    void Push(int data)
+    {
+        list.InsertInHead(data);
+    }
 
-void ShowLinkedList(LinkedList<int>& list)
-{
-    list.Foreach([](int value){
-        cout << value << ", ";
-    });
+    int Pop()
+    {
+        int ret = list.GetHeadData();
+        list.DeleteHead();
+        return ret;
+    }
 
-    cout << endl;
-}
+    void Print()
+    {
+        list.Foreach([](int data){
+            cout << data << ", ";
+        });
+
+        cout << endl;
+    }
+
+private:
+    LinkedList<int> list;
+};
 
 int main()
 {
-    LinkedList<int> list;
-    auto node1 = LinkedListInsertTest(list, 1);
-    ShowLinkedList(list);
-    auto node2 = LinkedListInsertTest(list, 2);
-    ShowLinkedList(list);
-    auto node3 = LinkedListInsertTest(list, 3);
-    ShowLinkedList(list);
-    auto node4 = LinkedListInsertTest(list, 4);
-    ShowLinkedList(list);
-    auto node5 = LinkedListInsertTest(list, 5);
-    ShowLinkedList(list);
+    Stack stack;
+    stack.Push(1);
+    stack.Push(2);
+    stack.Push(3);
+    stack.Push(4);
 
-    list.Delete(node5);
-    ShowLinkedList(list);
-    list.Delete(node2);
-    ShowLinkedList(list);
-    list.Delete(node3);
-    ShowLinkedList(list);
-    list.Delete(node4);
-    ShowLinkedList(list);
-    list.Delete(node1);
-    ShowLinkedList(list);
+    cout << stack.Pop() << endl;
+    stack.Print();
+    cout << stack.Pop() << endl;
+    stack.Print();
+    cout << stack.Pop() << endl;
+    stack.Print();
+    cout << stack.Pop() << endl;
+    stack.Print();
 
     return 0;
 }
