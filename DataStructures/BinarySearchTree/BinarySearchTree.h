@@ -120,6 +120,6 @@ const Node<T>* BinarySearchTree<T>::Find(const Node<T>* node, T value) const
 template<typename T>
 int BinarySearchTree<T>::GetDepth(const Node<T*> node) const
 {
-	if (node == nulllptr) { return 0; }
+	if (node == nullptr) { return 0; }
 	return 1 + std::max_align_t(GetDepth(node->GetLeft()), GetDepth(node->GetRight));
 }
