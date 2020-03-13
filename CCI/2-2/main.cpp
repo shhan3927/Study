@@ -50,48 +50,47 @@ void RemoveLinkedList(Node<int>* head)
     }
 }
 
-void RemoveDuplicatedNode(Node<int>* head)
+Node<int>* FindNodeFromBackward(Node<int>* head, int backwardIndex)
 {
-    set<int> s;
     auto current = head;
-    Node<int>* prev = nullptr;
+    int size = 0;
     while(current != nullptr)
     {
-        if(s.find(current->GetData()) != s.end())
-        {
-            Node<int>* buf = current;
-            current = current->GetNext();
-            if(buf == head)
-            {
-                head = current;
-            }
-            if(prev != nullptr)
-            {
-                prev->SetNext(current);
-            }
-            delete buf;
-        }
-        else
-        {
-            s.insert(current->GetData());
-            prev = current;
-            current = current->GetNext();
-        }
+        size ++;
+        current = current->GetNext();
     }
+
+    auto forwardIndex = size - backwardIndex;
+    if(forwardIndex > size || forwardIndex < 0)
+    {
+        return nullptr;
+    }
+    current = head;
+    for(int i=0; i<forwardIndex; i++)
+    {
+        current = current->GetNext();
+    }
+
+    return current;
 }
 
 int main()
 {
+    set<int> s;
+    
     Node<int>* head = nullptr;
     InsertHeadInLinkedList(&head, 3);
     InsertHeadInLinkedList(&head, 4);
     InsertHeadInLinkedList(&head, 5);
-    InsertHeadInLinkedList(&head, 3);
+    InsertHeadInLinkedList(&head, 9);
     InsertHeadInLinkedList(&head, 6);
     PrintLinkedList(head);
 
-    RemoveDuplicatedNode(head);
-    PrintLinkedList(head);
+    auto found = FindNodeFromBackward(head, 5);
+    if(found != nullptr)
+    {
+        cout << found->GetData() << endl;
+    }
 
     RemoveLinkedList(head);
     return 0;
