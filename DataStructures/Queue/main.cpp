@@ -1,40 +1,32 @@
 /* hello.cpp */
 #include <iostream>
-#include "Stack.h"
+#include "Queue.h"
 
 using namespace std;
 
 int main()
 {
-    Stack<int> stack;
-    stack.Push(1);
-    stack.Push(2);
-    stack.Push(3);
-    stack.Push(4);
+    Queue<int> queue;
+    queue.Add(1);
+    queue.Add(2);
+    queue.Add(3);
+    queue.Add(4);
 
     for(int i=0; i<5; i++)
     {
         try
         {
-            cout << stack.Pop() << endl;
+            cout << queue.Peek() << endl;
+            queue.Remove();
         }
         catch (out_of_range& e)
         {
             cout << e.what() << endl;
         }
 
-        cout << "Stack Length : " << stack.Size() << endl;
+        cout << "Stack Length : " << queue.Size() << endl;
     }
-
-    try
-    {
-        cout << stack.Top() << endl;
-    }
-    catch (exception& e)
-    {
-        cout << e.what() << endl;
-    }
-
+    
     return 0;
 }
 
