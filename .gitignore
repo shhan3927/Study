@@ -39,3 +39,4 @@ Debug
 *.vcxproj
 *.filters
 *.sln
+*.user
