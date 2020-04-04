@@ -28,7 +28,7 @@ private:
 template<typename T>
 void Heap<T>::Add(T value)
 {
-	if (size >= HEAP_MAX) { return; }
+	if (size > HEAP_MAX-1) { return; }
 	size++;
 	arr[size] = value;
 	int i = size / 2;
