@@ -24,9 +24,11 @@ struct Node
 		distance = numeric_limits<int>::max();
 		color = EColor::White;
 		parent = nullptr;
+		finish = numeric_limits<int>::max();
 	}
 
 	int distance = 0;
+	int finish = 0; // 깊이 우선 탐색 중 노드 탐색 종료 시 기록되는 시간.
 	T value;
 	EColor color = EColor::White;
 	shared_ptr<Node> parent = nullptr;
@@ -42,11 +44,14 @@ class Graph
 {
 public:
 	NodePtr<T> AddVertex(T value);
+	void ResetAllVertex();
 	void AddEdge(NodePtr<T> src, NodePtr<T> dest);
 	void BFS(NodePtr<T> root, function<void(NodePtr<T>)> callback);
-	void DFS(NodePtr<T> root, function<void(NodePtr<T>)> callback);
+	void DFS(function<void(NodePtr<T>)> callback);
+	void DFSVisit(NodePtr<T> node, function<void(NodePtr<T>)> callback);
 
 private:
+	int time = 0;
 	map<NodePtr<T>, list<NodePtr<T>>> container;
 };
 
@@ -61,6 +66,16 @@ NodePtr<T> Graph<T>::AddVertex(T value)
 }
 
 template<typename T>
+void Graph<T>::ResetAllVertex()
+{
+	time = 0;
+	for (auto& pair : container)
+	{
+		pair.first->Reset();
+	}
+}
+
+template<typename T>
 void Graph<T>::AddEdge(NodePtr<T> src, NodePtr<T> dest)
 {
 	auto& nodeList = container[src];
@@ -70,16 +85,7 @@ void Graph<T>::AddEdge(NodePtr<T> src, NodePtr<T> dest)
 template<typename T>
 void Graph<T>::BFS(NodePtr<T> root, function<void(NodePtr<T>)> callback)
 {
-	for (auto& pair : container)
-	{
-		pair.first->Reset();
-
-		for (auto childNode : pair.second)
-		{
-			childNode->Reset();
-		}
-	}
-
+	ResetAllVertex();	
 	root->color = EColor::Gray;
 	root->distance = 0;
 
@@ -90,7 +96,11 @@ void Graph<T>::BFS(NodePtr<T> root, function<void(NodePtr<T>)> callback)
 	{
 		auto node = nodeQueue.front();
 		nodeQueue.pop();
-		callback(node);
+
+		if(callback != nullptr)
+		{
+			callback(node);
+		}
 
 		auto nodeList = container[node];
 		for (auto childNode : nodeList)
@@ -109,7 +119,38 @@ void Graph<T>::BFS(NodePtr<T> root, function<void(NodePtr<T>)> callback)
 }
 
 template<typename T>
-void Graph<T>::DFS(NodePtr<T> root, function<void(NodePtr<T>)> callback)
+void Graph<T>::DFS(function<void(NodePtr<T>)> callback)
 {
+	ResetAllVertex();
+	time = 0;
 
+	for(auto& it : container)
+	{
+		auto node = it.first;
+		if(node->color == EColor::White)
+		{
+			DFSVisit(node, callback);
+		}
+	}
+}
+
+template<typename T>
+void Graph<T>::DFSVisit(NodePtr<T> node, function<void(NodePtr<T>)> callback)
+{
+	time += 1;
+	node->distance = time;
+	node->color = EColor::Gray;
+
+	for(auto& childNode : container[node])
+	{
+		if(childNode->color == EColor::White)
+		{
+			childNode->parent = node;
+			DFSVisit(childNode, nullptr);
+		}
+	}
+
+	time += 1;
+	node->finish = time;
+	node->color = EColor::Black;
 }

@@ -14,16 +14,17 @@ int main()
 	auto node5 = graph.AddVertex(5);
 
 	graph.AddEdge(node0, node1);
-	graph.AddEdge(node0, node4);
-	graph.AddEdge(node0, node5);
+	graph.AddEdge(node0, node3);
 
-	graph.AddEdge(node1, node3);
 	graph.AddEdge(node1, node4);
 
-	graph.AddEdge(node2, node1);
+	graph.AddEdge(node2, node4);
+	graph.AddEdge(node2, node5);
 
-	graph.AddEdge(node3, node2);
-	graph.AddEdge(node3, node4);
+	graph.AddEdge(node3, node1);
+
+	graph.AddEdge(node4, node3);
+	graph.AddEdge(node5, node5);
 
 	graph.BFS(node0, [](NodePtr<int> node)
 	{
@@ -31,6 +32,8 @@ int main()
 	});
 
 	cout << endl;
+
+	graph.DFS(nullptr);
 
 	return 0;
 }
