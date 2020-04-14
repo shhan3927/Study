@@ -50,13 +50,15 @@ public:
 	Node<T>* Search(T value);
 	Node<T>* Search(Node<T>* node, T value);
 	void Transplant(Node<T>* one, Node<T>* other);
-	int GetDepth(Node<T*> node) const;
+	void LeftRotate(Node<T>* node);
+
+	int GetDepth(Node<T>* node) const;
 	void PreorderTravel(const Node<T>* node, std::function<void (const Node<T>*)>callback) const;
 	void InorderTravel(const Node<T>* node, std::function<void(const Node<T>*)>callback) const;
 	void PostorderTravel(const Node<T>* node, std::function<void(const Node<T>*)>callback) const;
 
 public:
-	const Node<T>* GetRoot() const { return root; }
+	Node<T>* GetRoot() const { return root; }
 
 private:
 	Node<T>* root = nullptr;
@@ -263,6 +265,34 @@ void BinarySearchTree<T>::Transplant(Node<T>* one, Node<T>* other)
 }
 
 template<typename T>
+void BinarySearchTree<T>::LeftRotate(Node<T>* node)
+{
+	auto r = node->right;
+	node->right = r->left;
+	if(r->left != nullptr)
+	{
+		r->left->parent = node;
+	}
+	r->parent = node->parent;
+
+	if(node->parent == nullptr)
+	{
+		root = r;
+	}
+	else if(node->parent->right == node)
+	{
+		node->parent->right = r;
+	}
+	else
+	{
+		node->parent->left = r;
+	}
+
+	r->left = node;
+	node->parent = r;
+}
+
+template<typename T>
 void BinarySearchTree<T>::PreorderTravel(const Node<T>* node, std::function<void(const Node<T>*)>callback) const
 {
 	if (node == nullptr) { return; }
@@ -290,7 +320,7 @@ void BinarySearchTree<T>::PostorderTravel(const Node<T>* node, std::function<voi
 }
 
 template<typename T>
-int BinarySearchTree<T>::GetDepth(Node<T*> node) const
+int BinarySearchTree<T>::GetDepth(Node<T>* node) const
 {
 	if (node == nullptr) { return 0; }
 	return 1 + std::max(GetDepth(node->left), GetDepth(node->right));
