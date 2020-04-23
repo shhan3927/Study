@@ -46,6 +46,7 @@ int GetDepth2(TreeNodePtr tree)
     return max(l, r) + 1;
 }
 
+// CCI 답
 bool IsBalanced2(TreeNodePtr tree)
 {
     return GetDepth2(tree) != -100;
