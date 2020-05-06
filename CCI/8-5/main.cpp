@@ -1,37 +1,69 @@
 #include <iostream>
+#include <vector>
 
 using namespace std;
 
-int MultiplyR(int a, int b, int i)
+void GetPermsR(string s, vector<string>& buff, vector<string>& result, int i)
 {
-    if((b >> i) <= 0) { return 0; }
-
-    auto c = b >> i;
-    auto r = c & (1);
-
-    if(r == 1)
+    if(i == s.length())
     {
-        return (a << i) + MultiplyR(a, b, i+1);
-    }
-    else if(r == 0)
-    {
-        return MultiplyR(a, b, i+1);
+        return;
     }
 
-    return 0;
+    vector<string> v;
+    if( i == 0)
+    {
+        string c;
+        c += s[i];
+        v.push_back(c);
+    }
+    else
+    {
+        for(auto& b : buff)
+        {
+            for(int index = 0; index < b.length(); index++)
+            {
+                int j = 0;
+                string bb;
+                for(auto& c : b)
+                {
+                    if(j == index)
+                    {
+                        bb.push_back(s[i]);
+                    }
+
+                    bb.push_back(c);
+                    j++;   
+                }
+
+                v.push_back(bb);
+            }
+            v.push_back(b + s[i]);
+        }
+    }
+
+    result.insert(result.end(), v.begin(), v.end());
+
+    GetPermsR(s, v, result, i+1);
 }
 
-int Multiply(int a, int b)
+void GetPerms(string s, vector<string>& result)
 {
-    return MultiplyR(a, b, 0);
+    vector<string> buffer;
+    GetPermsR(s, buffer, result, 0);
 }
 
 int main()
 {
-    int a = 40;
-    int b = 500;
+    string s;
+    cin >> s;
+    vector<string> result;
+    GetPerms(s, result);
 
-    cout << Multiply(a, b) << endl;
+    for(auto& r : result)
+    {
+        cout << r << endl;
+    }
 
     return 0;
 }
