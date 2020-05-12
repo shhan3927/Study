@@ -15,7 +15,7 @@ void SegmentTree::Init(int* arr, int size)
         v.push_back(arr[i]);
     }
 
-    capacity = (int)ceil(log2(size)) * 4 + 1;
+    capacity = 1 << ((int)ceil(log2(size)) + 1);
     container = new int[capacity];
     Init(1, 0, size-1);
 }
