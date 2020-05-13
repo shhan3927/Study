@@ -18,23 +18,46 @@ int Init(int* arr, int* sTree, int n, int start, int end)
     return sTree[n];
 }
 
-void Update(int* arr, int* sTree, int n, int start, int end, int index, int diff)
+void Update(int* arr, int* sTree, int n, int left, int right, int start, int end, int diff, int size)
 {
-    if(index < start || index > end)
+    if(left > end || right < start)
     {
         return;
     }
 
-    sTree[n] += diff;
+    int count = 0;
+    if(left <= start && right >= end)
+    {   
+        count = end - start + 1;
+    }
+    else if(right >= end)
+    {
+        count = end - left + 1;
+    }
+    else if(left <= start)
+    {
+        count = right - start + 1;
+    }
+
+    sTree[n] = (count + sTree[n]);
+
     if(start == end)
     {
-        arr[index] += diff;
+        sTree[n] %= 10;
         return;
     }
-
+    else
+    {
+        int gap = size * 9 - sTree[n];
+        if(gap < 0)
+        {
+            sTree[n] -= abs(gap) * 10;
+        }
+    }
+    
     int mid = (start + end) / 2;
-    Update(arr, sTree, n*2, start, mid, index, diff);
-    Update(arr, sTree, n*2+1, mid+1, end, index, diff);
+    Update(arr, sTree, n*2, left, right, start, mid, diff, size/2);
+    Update(arr, sTree, n*2+1, left , right, mid+1, end, diff, size/2);
 }
 
 int GetSum(int* arr, int* sTree, int n, int left, int right, int start, int end)
@@ -46,29 +69,15 @@ int GetSum(int* arr, int* sTree, int n, int left, int right, int start, int end)
 
     if(left <= start && right >= end)
     {
+        if(start == end)
+        {
+            return sTree[n];
+        }
         return sTree[n];
     }
 
     int mid = (start + end) / 2;
-    
     return GetSum(arr, sTree, n*2, left, right, start, mid) + GetSum(arr, sTree, n*2+1, left, right, mid+1, end);
-}
-
-void Display(int* arr, int* sTree, int s1, int s2)
-{
-    cout << "arr : ";
-    for(int i=0; i<s1; i++)
-    {
-        cout << arr[i] << ", ";
-    }
-    cout << "\n";
-
-    cout << "sTree : ";
-    for(int i=1; i<=s2; i++)
-    {
-        cout << sTree[i] << ", ";
-    }
-    cout << "\n";
 }
 
 int main()
@@ -79,17 +88,13 @@ int main()
     int size, n;
     cin >> size >> n;
 
-    string s;
-    cin >> s;
-
     int* arr = new int[size];
-    int sTreeSize = static_cast<int>(ceil(log2(size)))*4+1;
+    int sTreeSize = 1 << (static_cast<int>(ceil(log2(size)))+1);
     int* sTree = new int[sTreeSize];
-    int i=0;
-    for(auto c : s)
+
+    for(int i=0; i<size; i++)
     {
-        arr[i] = c - '0';
-        i++;
+        scanf("%1d", arr+i);
     }
 
     vector<pair<int, int>> v;
@@ -103,23 +108,12 @@ int main()
     ////////////////////////////
     vector<int> result;
     Init(arr, sTree, 1, 0, size-1);
-    Display(arr, sTree, size, sTreeSize);
     for(int i=0; i<n; i++)
     {
-        result.push_back(GetSum(arr, sTree, 1, v[i].first, v[i].second, 0, size-1));
-
-        for(int j=v[i].first; j<=v[i].second; j++)
-        {
-            Update(arr, sTree, 1, 0, size-1, j, 1);
-        }
-        Display(arr, sTree, size, sTreeSize);
+        cout << GetSum(arr, sTree, 1, v[i].first, v[i].second, 0, size-1) << "\n";
+        Update(arr, sTree, 1, v[i].first, v[i].second, 0, size-1, 1, static_cast<int>(ceil(log2(size))));
     }
     
-    for(auto v : result)
-    {
-        cout << v << "\n";
-    }
-
     delete[] arr;
     delete[] sTree;
 
