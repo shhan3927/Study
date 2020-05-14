@@ -4,54 +4,102 @@
 
 using namespace std;
 
-int Init(int* arr, int* tree, int node, int start, int end)
+struct SegmentTree
+{
+    SegmentTree(int size)
+    {
+        arr.resize(size+1);
+        int h = (int)ceil(log2(size)) + 1;
+        int n = (1 << h) - 1;
+        tree.resize(n);
+        lazy.resize(n);
+    }
+
+    ~SegmentTree()
+    {
+        int a= 3;
+    }
+
+    vector<long long> arr;
+    vector<long long> tree;
+    vector<long long> lazy;
+};
+
+long long Init(SegmentTree& sTree, int node, int start, int end)
 {
     if(start == end)
     {
-        tree[node] = arr[start];
-        return tree[node];
+        sTree.tree[node] = sTree.arr[start];
+        return sTree.tree[node];
     }
 
     int mid = (start + end) / 2;
-    tree[node] = Init(arr, tree, node*2, start, mid) + Init(arr, tree, node*2+1, mid+1, end);
-    return tree[node];
+    sTree.tree[node] = Init(sTree, node*2, start, mid) + Init(sTree, node*2+1, mid+1, end);
+    return sTree.tree[node];
 }
 
-void Update(int* arr, int* tree, int node, int start, int end, int index, int diff)
+void UpdateLazy(SegmentTree& sTree, int node, int start, int end)
 {
-    if(index < start || index > end)
+    if(sTree.lazy[node] == 0)
     {
         return;
     }
 
-    tree[node] += diff;
+    sTree.tree[node] += (end - start + 1) * sTree.lazy[node];
+    if(start != end)
+    {
+        sTree.lazy[node*2] += sTree.lazy[node];
+        sTree.lazy[node*2+1] += sTree.lazy[node];
+    }
 
-    if(start == end)
+    sTree.lazy[node] = 0;
+}
+
+void UpdateRange(SegmentTree& sTree, int node, int left, int right, int start, int end, int diff)
+{
+    UpdateLazy(sTree, node, start, end);
+
+    if(right < start || left > end)
     {
         return;
     }
 
+    if(start >= left && right >= end)
+    {
+        sTree.tree[node] += (end - start + 1)*diff;
+        if(start != end)
+        {
+            sTree.lazy[node*2] += diff;
+            sTree.lazy[node*2+1] += diff;
+        }
+
+        return;
+    }
+
     int mid = (start + end) / 2;
-    Update(arr, tree, node*2, start, mid, index, diff);
-    Update(arr, tree, node*2+1, mid+1, end, index, diff);
+    UpdateRange(sTree, node*2, left, right, start, mid, diff);
+    UpdateRange(sTree, node*2+1, left, right, mid+1, end, diff);
+
+    sTree.tree[node] = sTree.tree[node*2] + sTree.tree[node*2+1];
 }
 
-
-int GetSum(int* arr, int* tree, int node, int left, int right, int start, int end)
+long long GetSum(SegmentTree& sTree, int node, int left, int right, int start, int end)
 {
+    UpdateLazy(sTree, node, start, end);
+
     if(left > end || right < start)
     {
         return 0;
     }
 
     if(left <= start && right >= end)
-    {
-        return tree[node];
+    {    
+        return sTree.tree[node];
     }
 
     int mid = (start + end) / 2;
-    return GetSum(arr, tree, node*2, left, right, start, mid) + 
-            GetSum(arr, tree,node*2+1, left, right, mid+1, end);
+    return GetSum(sTree, node*2, left, right, start, mid) + 
+            GetSum(sTree,node*2+1, left, right, mid+1, end);
 }
 
 struct Command
@@ -59,7 +107,7 @@ struct Command
     int type;
     int start;
     int end;
-    int diff;
+    long long diff;
 };
 
 int main()
@@ -68,14 +116,16 @@ int main()
     ios_base::sync_with_stdio(false);
 
     int n, m, k;
-    cin >> n >> m >> k;
+    //cin >> n >> m >> k;
+    scanf("%d %d %d",&n,&m,&k);
 
-    int* arr = new int[n];
+    SegmentTree tree(n);
     for(int i=0; i<n; i++)
     {
-        int value;
-        cin >> value;
-        arr[i] = value;
+        scanf("%lld", &tree.arr[i+1]);
+        // long long value;
+        // cin >> value;
+        // tree.arr[i+1] = value;
     }
 
     vector<Command> v;
@@ -86,31 +136,26 @@ int main()
         cin >> c.start >> c.end;
         if(c.type == 1)
         {
-            cin >> c.diff;
+            scanf("%lld", &c.diff);
+            //cin >> c.diff;
         }
         v.push_back(c);
     }
 
-    int* tree = new int[1 << ((int)(ceil(log2(n)))+1)];
-    Init(arr, tree, 1, 0, n-1);
+    ////////////////////////////////
+    Init(tree, 1, 1, n);
 
     for(auto& c : v)
     {
         if(c.type == 1)
         {
-            for(int i=c.start-1; i<=c.end-1; i++)
-            {
-                Update(arr, tree, 1, 0, n-1, i, c.diff);
-            }
+            UpdateRange(tree, 1, c.start, c.end, 1, n, c.diff);
         }
         else if(c.type == 2)
         {
-            cout << GetSum(arr, tree, 1, c.start-1, c.end-1, 0, n-1) << "\n";
+            cout << GetSum(tree, 1, c.start, c.end, 1, n) << "\n";
         }
     }
-
-    delete[] arr;
-    delete[] tree;
 
     return 0;
 }
