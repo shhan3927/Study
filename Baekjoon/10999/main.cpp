@@ -55,7 +55,7 @@ void UpdateLazy(SegmentTree& sTree, int node, int start, int end)
     sTree.lazy[node] = 0;
 }
 
-void UpdateRange(SegmentTree& sTree, int node, int left, int right, int start, int end, int diff)
+void UpdateRange(SegmentTree& sTree, int node, int left, int right, int start, int end, long long diff)
 {
     UpdateLazy(sTree, node, start, end);
 
@@ -116,16 +116,14 @@ int main()
     ios_base::sync_with_stdio(false);
 
     int n, m, k;
-    //cin >> n >> m >> k;
-    scanf("%d %d %d",&n,&m,&k);
+    cin >> n >> m >> k;
 
     SegmentTree tree(n);
     for(int i=0; i<n; i++)
     {
-        scanf("%lld", &tree.arr[i+1]);
-        // long long value;
-        // cin >> value;
-        // tree.arr[i+1] = value;
+        long long value;
+        cin >> value;
+        tree.arr[i+1] = value;
     }
 
     vector<Command> v;
@@ -136,8 +134,7 @@ int main()
         cin >> c.start >> c.end;
         if(c.type == 1)
         {
-            scanf("%lld", &c.diff);
-            //cin >> c.diff;
+            cin >> c.diff;
         }
         v.push_back(c);
     }
