@@ -1,4 +1,3 @@
-/* hello.cpp */
 #include <iostream>
 #include "Heap.h"
 
@@ -6,20 +5,16 @@ using namespace std;
 
 int main()
 {
-	Heap<int> heap;
-	heap.Add(1);
-	heap.Add(10);
-	heap.Add(4);
-	heap.Add(9);
-	heap.Add(3);
-	heap.Add(8);
+	Heap<int> heap(EHeapType::MIN);
+	heap.Append(1);
+	heap.Append(10);
+	heap.Append(4);
+	heap.Append(9);
+	heap.Append(3);
+	heap.Append(8);
 
-	heap.Print();
-	cout << "root : " << heap.GetRoot() << endl;
-	heap.Print();
-
-	heap.Add(7);
-	heap.Print();
+	heap.Build();
+	cout << heap.ExtractTop() << endl;
 
 	return 0;
 }

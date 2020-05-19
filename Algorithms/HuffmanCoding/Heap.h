@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <numeric>
+#include <functional>
 
 using namespace std;
 
@@ -26,6 +27,8 @@ public:
 	void Build();
 	void Heapify(int index);
 	T ExtractTop();
+	void Foreach(function<void (T& value)> func);
+	int GetSize() const { return size; }
 
 private:
 	void Swap(int i, int j)
@@ -35,6 +38,8 @@ private:
 		arr[j] = temp;
 	}
 	
+public:
+	function<bool (T, T)> Compare = nullptr;
 private:
 	EHeapType type;
 	T arr[HEAP_MAX];
@@ -66,8 +71,7 @@ void Heap<T>::Heapify(int index)
 
     if(l <= size)
     {
-		if((type == EHeapType::MAX && arr[l] > arr[index])
-		|| (type == EHeapType::MIN && arr[l] < arr[index]))
+		if(Compare(arr[l],  arr[index]))
 		{
         	selected = l;
 		}
@@ -75,8 +79,7 @@ void Heap<T>::Heapify(int index)
 
     if(r <= size)
     {
-		if((type == EHeapType::MAX && arr[r] > arr[selected])
-		|| (type == EHeapType::MIN && arr[r] < arr[selected]))
+		if(Compare(arr[r],  arr[selected]))
 		{
         	selected = r;
 		}
@@ -84,10 +87,7 @@ void Heap<T>::Heapify(int index)
 
     if(selected != index)
     {
-        int temp = arr[index];
-        arr[index] = arr[selected];
-        arr[selected] = temp;
-
+		Swap(index, selected);
         Heapify(selected);
     }
 }
@@ -97,14 +97,22 @@ T Heap<T>::ExtractTop()
 {
 	if(size < 1)
 	{
-		return type == EHeapType::MIN ? numeric_limits<int>::min()
-									: numeric_limits<int>::max();
+		return T();
 	}
 
-	int ret = arr[1];
+	T ret = arr[1];
 	arr[1] = arr[size];
 	size--;
 	Heapify(1);
 
 	return ret;
+}
+
+template<typename T>
+void Heap<T>::Foreach(function<void (T& value)> func)
+{
+	for(int i=1; i<=size; i++)
+	{
+		func(arr[i]);
+	}
 }
