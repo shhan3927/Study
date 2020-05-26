@@ -33,10 +33,6 @@ struct Graph
 	:vectexCount(n)
 	{
 		dests.resize(n+1);
-		for(int i=1; i<=n; i++)
-		{
-			dests[i] = i;
-		}
 	}
 
 	void AddEdge(int s, int d, int w)
@@ -49,7 +45,7 @@ struct Graph
 	vector<int> dests;
 };
 
-void Dijkstra(Graph g)
+void Dijkstra(Graph& g)
 {
 	auto Compare = [](const Node& one, const Node& other)
 	{
@@ -73,9 +69,13 @@ void Dijkstra(Graph g)
 		{
 			for(auto& e : g.edges[n.vertex])
 			{
+				auto before = g.dests[e.dest];
 				g.dests[e.dest] = min(g.dests[e.dest], g.dests[n.vertex] + e.weight);
-				Node newNode(e.dest, g.dests[e.dest], n.vertex);
-				q.push(newNode);
+				if(before > g.dests[e.dest])
+				{
+					Node newNode(e.dest, g.dests[e.dest], n.vertex);
+					q.push(newNode);
+				}
 			}
 		}
 	}
