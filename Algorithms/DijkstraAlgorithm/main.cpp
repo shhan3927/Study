@@ -41,10 +41,15 @@ struct Graph
 	}
 
 	int vectexCount;
+
+	// 한 정점에서 다른 정점으로의 가중치 포함된 간선 정보들
 	map<int, vector<Edge>> edges;
+
+	// 최소 비용 정보
 	vector<int> dests;
 };
 
+// 한 정점에서 모든 다른 정점까지의 최단 경로를 찾는 알고리즘
 void Dijkstra(Graph& g)
 {
 	auto Compare = [](const Node& one, const Node& other)
@@ -53,6 +58,7 @@ void Dijkstra(Graph& g)
 	};
 	priority_queue<Node, vector<Node>, decltype(Compare)> q(Compare);
 
+	// 마지막 정점에서부터 시작, 마지막 정점 가중치 0, 그 외에는 무한대
 	for(int i=1; i<=g.vectexCount; i++)
 	{
 		g.dests[i] = i == g.vectexCount ? 0 : numeric_limits<int>::max();

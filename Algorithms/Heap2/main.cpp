@@ -5,7 +5,7 @@ using namespace std;
 
 int main()
 {
-	Heap<int> heap(EHeapType::MAX);
+	Heap<int> heap(EHeapType::MIN);
 	heap.Append(1);
 	heap.Append(10);
 	heap.Append(4);
